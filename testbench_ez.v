@@ -24,6 +24,10 @@ module testbench;
 
 	always #5 clk = ~clk;
 
+	always@(posedge clk) begin
+		if (trap) $finish;
+	end
+
 	initial begin
 		if ($test$plusargs("vcd")) begin
 			$dumpfile("testbench.vcd");
@@ -31,11 +35,10 @@ module testbench;
 		end
 		repeat (100) @(posedge clk);
 		resetn <= 1;
-		repeat (700000) @(posedge clk);
-		$finish;
+		repeat (1000000) @(posedge clk);
+		//$finish;
 	end
-
-
+	
 	//always @(posedge clk) begin
 	//	if (mem_valid && mem_ready) begin
 	//		if (mem_instr)

@@ -15,7 +15,8 @@ module picorv_mem#(
 
 	reg [31:0] memory [0:MEM_SIZE-1];
 	initial begin
-      $readmemh("/home/ylxiao/ws_182/F200929_riscv/src/firmware.hex", memory);
+      //$readmemh("/home/ylxiao/ws_182/F200929_riscv/src/firmware.hex", memory);
+      $readmemh("/home/ylxiao/ws_riscv/picorv32/firmware/firmware.hex", memory);
     end
     
     reg [15:0] count_cycle;

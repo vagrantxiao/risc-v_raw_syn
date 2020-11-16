@@ -12,7 +12,7 @@ module testbench;
 	reg clk = 1;
 	reg resetn = 0;
 	wire trap;
-
+    wire [48:0] print_out;
 
 
     
@@ -21,6 +21,7 @@ module testbench;
     )i1(
     .clk(clk),
     .resetn(resetn),
+    .print_out(print_out),
     .trap(trap)
     );
 	
@@ -58,9 +59,10 @@ module testbench;
     wire [7:0] display_char;
     assign display_en = (i1.mem_addr == 32'h1000_0000) ? 1:0;
     assign display_char = i1.mem_wdata[7:0];
+    
     always@(posedge clk) begin
-        if(display_en && i1.mem_ready==1)
-            $write("%c", display_char);
+        if(print_out[48])
+            $write("%c", print_out[7:0]);
     end
     
     

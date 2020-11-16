@@ -3,6 +3,7 @@ module picorv32_wrapper#(
   )(
   input clk,
   input resetn,
+  output reg [48:0] print_out,
   output trap
 );
   wire mem_valid;
@@ -47,6 +48,19 @@ module picorv32_wrapper#(
         .irq         (irq        )
 	); 
 
+	
+    always@(posedge clk) begin
+        if(!resetn) begin
+          print_out <= 0;
+        end else begin
+          if(mem_addr == 32'h1000_0000 && mem_ready==1)
+            print_out <= {1'b1, 40'h0000000000, mem_wdata[7:0]};
+          else
+            print_out <= {1'b0, 48'h0000_0000_0000};
+        end          
+    end
+    
+    
 
 endmodule
 	

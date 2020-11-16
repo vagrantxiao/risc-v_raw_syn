@@ -12,88 +12,57 @@ module testbench;
 	reg clk = 1;
 	reg resetn = 0;
 	wire trap;
-	wire mem_valid;
-    wire mem_instr;
-    wire mem_ready;
-    wire [31:0] mem_addr;
-    wire [31:0] mem_wdata;
-    wire [3:0] mem_wstrb;
-    wire [31:0] mem_rdata;
-    wire [31:0] irq;
 
 
+
+    
+    picorv32_wrapper#(
+    .MEM_SIZE(MEM_SIZE)
+    )i1(
+    .clk(clk),
+    .resetn(resetn),
+    .trap(trap)
+    );
+	
+	
+	
 	always #5 clk = ~clk;
 
-	always@(posedge clk) begin
-		if (trap) $finish;
-	end
+    always@(posedge clk) begin
+        if (trap) $finish;
+    end
 
-	initial begin
-		if ($test$plusargs("vcd")) begin
-			$dumpfile("testbench.vcd");
-			$dumpvars(0, testbench);
-		end
-		repeat (100) @(posedge clk);
-		resetn <= 1;
-		repeat (1000000) @(posedge clk);
-		//$finish;
-	end
-	
-	//always @(posedge clk) begin
-	//	if (mem_valid && mem_ready) begin
-	//		if (mem_instr)
-	//			$display("ifetch 0x%08x: 0x%08x", mem_addr, mem_rdata);
-	//		else if (mem_wstrb)
-	//			$display("write  0x%08x: 0x%08x (wstrb=%b)", mem_addr, mem_wdata, mem_wstrb);
-	//		else
-	//			$display("read   0x%08x: 0x%08x", mem_addr, mem_rdata);
-	//	end
-	//end
-	
-	
+    initial begin
+        if ($test$plusargs("vcd")) begin
+            $dumpfile("testbench.vcd");
+            $dumpvars(0, testbench);
+        end
+        repeat (100) @(posedge clk);
+        resetn <= 1;
+        repeat (1000000) @(posedge clk);
+        //$finish;
+    end
     
-	
-    
+    //always @(posedge clk) begin
+    //    if (mem_valid && mem_ready) begin
+    //        if (mem_instr)
+    //            $display("ifetch 0x%08x: 0x%08x", mem_addr, mem_rdata);
+    //        else if (mem_wstrb)
+    //            $display("write  0x%08x: 0x%08x (wstrb=%b)", mem_addr, mem_wdata, mem_wstrb);
+    //        else
+    //            $display("read   0x%08x: 0x%08x", mem_addr, mem_rdata);
+    //    end
+    //end	
 	
 	wire display_en;
     wire [7:0] display_char;
-    assign display_en = (mem_addr == 32'h1000_0000) ? 1:0;
-    assign display_char = mem_wdata[7:0];
+    assign display_en = (i1.mem_addr == 32'h1000_0000) ? 1:0;
+    assign display_char = i1.mem_wdata[7:0];
     always@(posedge clk) begin
-        if(display_en && mem_ready==1)
+        if(display_en && i1.mem_ready==1)
             $write("%c", display_char);
     end
     
-	picorv32 #(
-	) uut (
-		.clk         (clk        ),
-		.resetn      (resetn     ),
-		.trap        (trap       ),
-		.mem_valid   (mem_valid  ),
-		.mem_instr   (mem_instr  ),
-		.mem_ready   (mem_ready  ),
-		.mem_addr    (mem_addr   ),
-		.mem_wdata   (mem_wdata  ),
-		.mem_wstrb   (mem_wstrb  ),
-		.mem_rdata   (mem_rdata  ),
-		.irq         (irq        )
-	);
-	
-	picorv_mem#(
-        .MEM_SIZE(MEM_SIZE)
-    ) picorv_mem_inst(
-        .clk    (clk),
-        .resetn      (resetn     ),
-        .mem_valid   (mem_valid  ),
-        .mem_instr   (mem_instr  ),
-        .mem_ready   (mem_ready  ),
-        .mem_addr    (mem_addr   ),
-        .mem_wdata   (mem_wdata  ),
-        .mem_wstrb   (mem_wstrb  ),
-        .mem_rdata   (mem_rdata  ),
-        .irq         (irq        )
-    ); 
-	
-	
+    
 	
 endmodule
